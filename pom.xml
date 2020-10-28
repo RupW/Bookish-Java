@@ -50,5 +50,20 @@
             <version>3.4.0</version>
         </dependency>
     </dependencies>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.jdbi</groupId>
+                <artifactId>jdbi3-bom</artifactId>
+                <type>pom</type>
+                <version>3.16.0</version>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.jdbi</groupId>
+                <artifactId>jdbi3-core</artifactId>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
 </project>
