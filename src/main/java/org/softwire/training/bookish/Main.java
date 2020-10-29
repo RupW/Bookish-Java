@@ -1,42 +1,58 @@
 package org.softwire.training.bookish;
 
-import org.jdbi.v3.core.Jdbi;
 import org.softwire.training.bookish.models.database.Book;
 
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Properties;
-
+import java.util.Scanner;
 
 public class Main {
-
     public static void main(String[] args) throws SQLException {
-        String hostname = "localhost";
-        String database = "bookish_schema";
-        String user = "root";
-        String password = "";
-        String connectionString = "jdbc:mysql://" + hostname + "/" + database + "?user=" + user + "&password=" + password + "&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT&useSSL=false";
+        Database database = new Database();
+        database.initialise();
+        String userParameter = "";
+        String searchRepeat = "";
 
-        jdbcMethod(connectionString);
+
+        while (!userParameter.equalsIgnoreCase("exit")) {
+            while (!searchRepeat.equalsIgnoreCase("n")) {
+                search();
+                Scanner repeat = new Scanner(System.in);
+                System.out.println("Would you like to search again? y/n");
+                searchRepeat = repeat.nextLine();
+            }
+        }
+        database.cleanUp();
     }
 
-    private static void jdbcMethod(String connectionString) throws SQLException {
-        ArrayList<String> bookTitle = new ArrayList<String>();
-        Connection connection = DriverManager.getConnection(connectionString);
+    public static void search() {
+        Database database = new Database();
+        ArrayList<Book> result = null;
 
-        String titleQuery = "select title from book";
-        try (Statement stmt = connection.createStatement()) {
-            ResultSet rs = stmt.executeQuery(titleQuery);
-            while (rs.next()) {
-                String title = rs.getString("title");
-                bookTitle.add(title);
-            }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());;
+        Scanner parameterSearch = new Scanner(System.in);
+        System.out.println("Parameters to search by: (author/title/genre/all)");
+        String userParameter = parameterSearch.nextLine();
+        if (userParameter.equalsIgnoreCase("author")) {
+            Scanner authorSearch = new Scanner(System.in);
+            System.out.println("Author name: ");
+            String userAuthor = authorSearch.nextLine();
+            result = database.getBooksByAuthor(userAuthor);
         }
-
-        Collections.sort(bookTitle);
-        System.out.println(bookTitle);
+        if (userParameter.equalsIgnoreCase("title")) {
+            Scanner titleSearch = new Scanner(System.in);
+            System.out.println("Title of book: ");
+            String userTitle = titleSearch.nextLine();
+            result = database.getBooksByTitle(userTitle);
+        }
+        if (userParameter.equalsIgnoreCase("genre")) {
+            Scanner genreSearch = new Scanner(System.in);
+            System.out.println("Genre: ");
+            String userGenre = genreSearch.nextLine();
+            result = database.getBooksByGenre(userGenre);
+        }
+        if (userParameter.equalsIgnoreCase("all")) {
+            result = database.getAllBooks();
+        }
+        System.out.println(result);
     }
 }

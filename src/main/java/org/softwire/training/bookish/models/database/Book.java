@@ -1,12 +1,21 @@
 package org.softwire.training.bookish.models.database;
 
 public class Book {
-    private int id = this.id;
-    private String title = this.title;
-    private String author = this.author;
-    private String genre = this.genre;
-    private int year = this.year;
-    private int no_in_stock = this.no_in_stock;
+    private int id;
+    private String title;
+    private String author;
+    private String genre;
+    private int year;
+    private int no_in_stock;
+
+    public Book(int id, String title, String author, String genre, int year, int no_in_stock) {
+        this.id = id;
+        this.title = title;
+        this.author = author;
+        this.genre = genre;
+        this.year = year;
+        this.no_in_stock = no_in_stock;
+    }
 
     public int getId() {
         return id;
