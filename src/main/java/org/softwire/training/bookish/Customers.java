@@ -102,8 +102,9 @@ public class Customers {
         return userFound;
     }
 
-    public static void customerSearch(Customers customers) {
+    public Users customerSearch() {
         ArrayList<Users> result = null;
+        Users user = null;
 
         Scanner parameterSearch = new Scanner(System.in);
         System.out.println("Parameters to search by: (First Name/Last Name/ID)");
@@ -113,26 +114,39 @@ public class Customers {
             Scanner fNameSearch = new Scanner(System.in);
             System.out.println("First Name");
             String userFName = fNameSearch.nextLine();
-            result = customers.getUsersByFName(userFName);
+            result = getUsersByFName(userFName);
+            user = result.get(0);
         }
         if (userParameter.equalsIgnoreCase("Last Name")) {
             Scanner lNameSearch = new Scanner(System.in);
             System.out.println("Last Name: ");
             String userLName = lNameSearch.nextLine();
-            result = customers.getUsersByLName(userLName);
+            result = getUsersByLName(userLName);
+            user = result.get(0);
         }
         if (userParameter.equalsIgnoreCase("ID")) {
             Scanner IDSearch = new Scanner(System.in);
             System.out.println("ID: ");
             String userID = IDSearch.nextLine();
-            result = customers.getUsersByID(userID);
+            result = getUsersByID(userID);
+            user = result.get(0);
         }
         if (userParameter.equalsIgnoreCase("All")) {
-            result = customers.getAllUsers();
+            result = getAllUsers();
         }
         System.out.println(result);
+        return user;
     }
 
+    public void addStockToUser (Users user) {
+        String allQuery = "update users set no_of_books=no_of_books-1 where id='" + user.getId() + "'";
+        try (Statement stmt = connection.createStatement()) {
+            ResultSet rs = stmt.executeQuery(allQuery);
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        //sql command to update table
+    }
 
     public void cleanUp() {
         // enter code here to terminate connection with the database

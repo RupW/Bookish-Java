@@ -23,6 +23,7 @@ public class Database {
             throwables.printStackTrace();
         }
     }
+
     public ArrayList<Book> getBooksByID(String userInput) {
         ArrayList<Book> bookFound = new ArrayList<>();
         String IDQuery = "select * from book where id = '" + userInput + "'";
@@ -132,39 +133,58 @@ public class Database {
         return bookFound;
     }
 
-    public static void databaseSearch(Database database) {
+    public Book databaseSearch() {
         ArrayList<Book> result = null;
+        Book book = null;
 
         Scanner parameterSearch = new Scanner(System.in);
         System.out.println("Parameters to search by: (Author/Title/Genre/All)");
         String userParameter = parameterSearch.nextLine();
 
+        if (userParameter.equalsIgnoreCase("id")) {
+            Scanner IDSearch = new Scanner(System.in);
+            System.out.println("ID: ");
+            String userID = IDSearch.nextLine();
+            result = getBooksByTitle(userID);
+            book = result.get(0);
+        }
         if (userParameter.equalsIgnoreCase("title")) {
             Scanner titleSearch = new Scanner(System.in);
             System.out.println("Title of book: ");
             String userTitle = titleSearch.nextLine();
-            result = database.getBooksByTitle(userTitle);
+            result = getBooksByTitle(userTitle);
+            book = result.get(0);
         }
         if (userParameter.equalsIgnoreCase("author")) {
             Scanner authorSearch = new Scanner(System.in);
             System.out.println("Author name: ");
             String userAuthor = authorSearch.nextLine();
-            result = database.getBooksByAuthor(userAuthor);
+            result = getBooksByAuthor(userAuthor);
+            book = result.get(0);
         }
-        if (userParameter.equalsIgnoreCase("genre")) {
-            Scanner genreSearch = new Scanner(System.in);
-            System.out.println("Genre: ");
-            String userGenre = genreSearch.nextLine();
-            result = database.getBooksByGenre(userGenre);
-        }
+//        if (userParameter.equalsIgnoreCase("genre")) {
+//            Scanner genreSearch = new Scanner(System.in);
+//            System.out.println("Genre: ");
+//            String userGenre = genreSearch.nextLine();
+//            result = getBooksByGenre(userGenre);
+//            book = result.get(0);
+//        }
         if (userParameter.equalsIgnoreCase("all")) {
-            result = database.getAllBooks();
+            result = getAllBooks();
         }
         System.out.println(result);
+        return book;
+    }
+
+    public void takeFromStock(Book book) {
+        try (Statement stmt = connection.createStatement()) {
+            stmt.execute("update book set no_in_stock=no_in_stock-1 where id='" + book.getId() + "'");
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     public void cleanUp() {
         // enter code here to terminate connection with the database
     }
-
 }
