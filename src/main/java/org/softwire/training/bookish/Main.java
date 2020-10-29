@@ -2,36 +2,34 @@ package org.softwire.training.bookish;
 
 import org.softwire.training.bookish.models.database.Book;
 
-import java.sql.*;
+
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Main {
-    public static void main(String[] args) throws SQLException {
+    public static void main(String[] args) {
         Database database = new Database();
-        database.initialise();
         String userParameter = "";
         String searchRepeat = "";
+        database.initialise();
 
 
-        while (!userParameter.equalsIgnoreCase("exit")) {
-            while (!searchRepeat.equalsIgnoreCase("n")) {
-                search();
-                Scanner repeat = new Scanner(System.in);
-                System.out.println("Would you like to search again? y/n");
-                searchRepeat = repeat.nextLine();
-            }
+        while (!searchRepeat.equalsIgnoreCase("n")) {
+            search(database);
+            Scanner repeat = new Scanner(System.in);
+            System.out.println("Would you like to search again? y/n");
+            searchRepeat = repeat.nextLine();
         }
         database.cleanUp();
     }
 
-    public static void search() {
-        Database database = new Database();
+    public static void search(Database database) {
         ArrayList<Book> result = null;
 
         Scanner parameterSearch = new Scanner(System.in);
-        System.out.println("Parameters to search by: (author/title/genre/all)");
+        System.out.println("Parameters to search by: (Author/Title/Genre/All)");
         String userParameter = parameterSearch.nextLine();
+
         if (userParameter.equalsIgnoreCase("author")) {
             Scanner authorSearch = new Scanner(System.in);
             System.out.println("Author name: ");

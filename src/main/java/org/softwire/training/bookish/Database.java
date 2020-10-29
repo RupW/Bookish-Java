@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 public class Database {
     private Connection connection = null;
+
     public void initialise() {
         String hostname = "localhost";
         String database = "bookish_schema";
@@ -23,7 +24,7 @@ public class Database {
     }
 
     public ArrayList<Book> getBooksByAuthor(String userInput) {
-        ArrayList<Book> bookFound = new ArrayList<Book>();
+        ArrayList<Book> bookFound = new ArrayList<>();
         String authorQuery = "select * from book";
         try (Statement stmt = connection.createStatement()) {
             ResultSet rs = stmt.executeQuery(authorQuery);
@@ -34,7 +35,7 @@ public class Database {
                 String genre = rs.getString("genre");
                 int year = rs.getInt("year");
                 int no_in_stock = rs.getInt("no_in_stock");
-                if (author.contains(userInput)) {
+                if (author.equalsIgnoreCase(userInput)) {
                     Book book = new Book(id, title, author, genre, year, no_in_stock);
                     bookFound.add(book);
                 }
@@ -46,7 +47,7 @@ public class Database {
     }
 
     public ArrayList<Book> getBooksByTitle(String userInput) {
-        ArrayList<Book> bookFound = new ArrayList<Book>();
+        ArrayList<Book> bookFound = new ArrayList<>();
         String titleQuery = "select * from book";
         try (Statement stmt = connection.createStatement()) {
             ResultSet rs = stmt.executeQuery(titleQuery);
@@ -57,7 +58,8 @@ public class Database {
                 String genre = rs.getString("genre");
                 int year = rs.getInt("year");
                 int no_in_stock = rs.getInt("no_in_stock");
-                if (title.contains(userInput)) {
+
+                if (title.equalsIgnoreCase(userInput)) {
                     Book book = new Book(id, title, author, genre, year, no_in_stock);
                     bookFound.add(book);
                 }
@@ -69,7 +71,7 @@ public class Database {
     }
 
     public ArrayList<Book> getBooksByGenre(String userInput) {
-        ArrayList<Book> bookFound = new ArrayList<Book>();
+        ArrayList<Book> bookFound = new ArrayList<>();
         String genreQuery = "select * from book";
         try (Statement stmt = connection.createStatement()) {
             ResultSet rs = stmt.executeQuery(genreQuery);
@@ -80,7 +82,8 @@ public class Database {
                 String genre = rs.getString("genre");
                 int year = rs.getInt("year");
                 int no_in_stock = rs.getInt("no_in_stock");
-                if (genre.contains(userInput)) {
+
+                if (genre.equalsIgnoreCase(userInput)) {
                     Book book = new Book(id, title, author, genre, year, no_in_stock);
                     bookFound.add(book);
                 }
@@ -92,7 +95,7 @@ public class Database {
     }
 
     public ArrayList<Book> getAllBooks() {
-        ArrayList<Book> bookFound = new ArrayList<Book>();
+        ArrayList<Book> bookFound = new ArrayList<>();
         String allQuery = "select * from book";
         try (Statement stmt = connection.createStatement()) {
             ResultSet rs = stmt.executeQuery(allQuery);
@@ -113,7 +116,7 @@ public class Database {
         return bookFound;
     }
 
-    public static void cleanUp() {
+    public void cleanUp() {
         // enter code here to terminate connection with the database
     }
 }
