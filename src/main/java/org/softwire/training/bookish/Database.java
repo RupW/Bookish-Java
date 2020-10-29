@@ -4,6 +4,7 @@ import org.softwire.training.bookish.models.database.Book;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 
 public class Database {
@@ -22,12 +23,11 @@ public class Database {
             throwables.printStackTrace();
         }
     }
-
-    public ArrayList<Book> getBooksByAuthor(String userInput) {
+    public ArrayList<Book> getBooksByID(String userInput) {
         ArrayList<Book> bookFound = new ArrayList<>();
-        String authorQuery = "select * from book";
+        String IDQuery = "select * from book where id = '" + userInput + "'";
         try (Statement stmt = connection.createStatement()) {
-            ResultSet rs = stmt.executeQuery(authorQuery);
+            ResultSet rs = stmt.executeQuery(IDQuery);
             while (rs.next()) {
                 int id = rs.getInt("id");
                 String title = rs.getString("title");
@@ -35,10 +35,9 @@ public class Database {
                 String genre = rs.getString("genre");
                 int year = rs.getInt("year");
                 int no_in_stock = rs.getInt("no_in_stock");
-                if (author.equalsIgnoreCase(userInput)) {
-                    Book book = new Book(id, title, author, genre, year, no_in_stock);
-                    bookFound.add(book);
-                }
+
+                Book book = new Book(id, title, author, genre, year, no_in_stock);
+                bookFound.add(book);
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -48,7 +47,7 @@ public class Database {
 
     public ArrayList<Book> getBooksByTitle(String userInput) {
         ArrayList<Book> bookFound = new ArrayList<>();
-        String titleQuery = "select * from book";
+        String titleQuery = "select * from book where title = '" + userInput + "'";
         try (Statement stmt = connection.createStatement()) {
             ResultSet rs = stmt.executeQuery(titleQuery);
             while (rs.next()) {
@@ -58,11 +57,30 @@ public class Database {
                 String genre = rs.getString("genre");
                 int year = rs.getInt("year");
                 int no_in_stock = rs.getInt("no_in_stock");
+                Book book = new Book(id, title, author, genre, year, no_in_stock);
+                bookFound.add(book);
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return bookFound;
+    }
 
-                if (title.equalsIgnoreCase(userInput)) {
-                    Book book = new Book(id, title, author, genre, year, no_in_stock);
-                    bookFound.add(book);
-                }
+    public ArrayList<Book> getBooksByAuthor(String userInput) {
+        ArrayList<Book> bookFound = new ArrayList<>();
+        String authorQuery = "select * from book where author = '" + userInput + "'";
+        try (Statement stmt = connection.createStatement()) {
+            ResultSet rs = stmt.executeQuery(authorQuery);
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String title = rs.getString("title");
+                String author = rs.getString("author");
+                String genre = rs.getString("genre");
+                int year = rs.getInt("year");
+                int no_in_stock = rs.getInt("no_in_stock");
+
+                Book book = new Book(id, title, author, genre, year, no_in_stock);
+                bookFound.add(book);
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -72,7 +90,7 @@ public class Database {
 
     public ArrayList<Book> getBooksByGenre(String userInput) {
         ArrayList<Book> bookFound = new ArrayList<>();
-        String genreQuery = "select * from book";
+        String genreQuery = "select * from book where genre = '" + userInput + "'";
         try (Statement stmt = connection.createStatement()) {
             ResultSet rs = stmt.executeQuery(genreQuery);
             while (rs.next()) {
@@ -83,10 +101,8 @@ public class Database {
                 int year = rs.getInt("year");
                 int no_in_stock = rs.getInt("no_in_stock");
 
-                if (genre.equalsIgnoreCase(userInput)) {
-                    Book book = new Book(id, title, author, genre, year, no_in_stock);
-                    bookFound.add(book);
-                }
+                Book book = new Book(id, title, author, genre, year, no_in_stock);
+                bookFound.add(book);
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -116,7 +132,39 @@ public class Database {
         return bookFound;
     }
 
+    public static void databaseSearch(Database database) {
+        ArrayList<Book> result = null;
+
+        Scanner parameterSearch = new Scanner(System.in);
+        System.out.println("Parameters to search by: (Author/Title/Genre/All)");
+        String userParameter = parameterSearch.nextLine();
+
+        if (userParameter.equalsIgnoreCase("title")) {
+            Scanner titleSearch = new Scanner(System.in);
+            System.out.println("Title of book: ");
+            String userTitle = titleSearch.nextLine();
+            result = database.getBooksByTitle(userTitle);
+        }
+        if (userParameter.equalsIgnoreCase("author")) {
+            Scanner authorSearch = new Scanner(System.in);
+            System.out.println("Author name: ");
+            String userAuthor = authorSearch.nextLine();
+            result = database.getBooksByAuthor(userAuthor);
+        }
+        if (userParameter.equalsIgnoreCase("genre")) {
+            Scanner genreSearch = new Scanner(System.in);
+            System.out.println("Genre: ");
+            String userGenre = genreSearch.nextLine();
+            result = database.getBooksByGenre(userGenre);
+        }
+        if (userParameter.equalsIgnoreCase("all")) {
+            result = database.getAllBooks();
+        }
+        System.out.println(result);
+    }
+
     public void cleanUp() {
         // enter code here to terminate connection with the database
     }
+
 }
