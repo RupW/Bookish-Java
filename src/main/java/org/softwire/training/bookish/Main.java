@@ -1,6 +1,7 @@
 package org.softwire.training.bookish;
 
 import org.softwire.training.bookish.models.database.Book;
+import org.softwire.training.bookish.models.database.Database;
 import org.softwire.training.bookish.models.database.Rental;
 import org.softwire.training.bookish.models.database.Users;
 
@@ -8,47 +9,54 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Main {
+    public static boolean searchRepeat = true;
+
     public static void main(String[] args) {
-        Database database = new Database();
+        Library library = new Library();
         Customers customers = new Customers();
         Rental rental = new Rental();
-        String searchRepeat = "";
-        database.initialise();
 
-        Scanner bookScanner = new Scanner(System.in);
-        System.out.println("Search books or customers? ... or exit");
-        String userInput = bookScanner.nextLine();
+        Database.initialise();
 
-        while (!searchRepeat.equalsIgnoreCase("exit" || "no")) {
+        while (searchRepeat = true) {
+            Scanner bookOrCustomer = new Scanner(System.in);
+            System.out.println("Search books or customers? ... or exit");
+            String userInput = bookOrCustomer.nextLine();
+            if (userInput.equalsIgnoreCase("exit")) {
+                searchRepeat = false;
+            }
             if (userInput.equalsIgnoreCase("customers")) {
-                while (!searchRepeat.equalsIgnoreCase("n")) {
-                    customers.customerSearch();
-                }
+                customers.customerSearch();
             }
             if (userInput.equalsIgnoreCase("books")) {
-
-                // book database search
-                Book bookResult = database.databaseSearch();
+                Book bookResult = library.librarySearch();
 
                 Scanner rentABook = new Scanner(System.in);
                 System.out.println("Rent this book? y/n");
                 String rentBook = rentABook.nextLine();
 
+                if (rentBook.equalsIgnoreCase("n")) {
+                    searchRepeat = false;
+                }
                 if (rentBook.equalsIgnoreCase("y")) {
-                    Scanner userResult = new Scanner(System.in);
+                    Scanner userID = new Scanner(System.in);
                     System.out.println("Enter user ID: ");
-                    String rentUser = userResult.nextLine();
+                    String rentUser = userID.nextLine();
+                    ArrayList<Users> user = customers.getUsersByID(rentUser);
 
-                    database.takeFromStock(bookResult);
-                    customers.addStockToUser(customers.getUsersByID(rentUser));
+                    library.takeFromStock(bookResult);
+                    customers.addStockToUser(user.get(0));
+                    rental.createRental(bookResult, user.get(0));
+                    System.out.println("Rental confirmed.");
+                }
+                Scanner userResult = new Scanner(System.in);
+                System.out.println("Would you like to search again? y/n");
+                String searchAgain = userResult.nextLine();
+                if (searchAgain.equalsIgnoreCase("n")) {
+                    searchRepeat = false;
                 }
             }
-
-            Scanner repeat = new Scanner(System.in);
-            System.out.println("Would you like to search again?");
-            searchRepeat = repeat.nextLine();
         }
-
-        database.cleanUp();
+        Database.cleanUp();
     }
 }

@@ -1,6 +1,6 @@
 package org.softwire.training.bookish;
 
-import org.softwire.training.bookish.models.database.Book;
+import org.softwire.training.bookish.models.database.Database;
 import org.softwire.training.bookish.models.database.Users;
 
 import java.sql.*;
@@ -10,22 +10,11 @@ import java.util.Scanner;
 public class Customers {
     private Connection connection = null;
 
-    public void initialise() {
-        String hostname = "localhost";
-        String database = "bookish_schema";
-        String user = "root";
-        String password = "68Flinders!";
-        String connectionString = "jdbc:mysql://" + hostname + "/" + database + "?user=" + user + "&password=" + password + "&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT&useSSL=false";
-
-        try {
-            connection = DriverManager.getConnection(connectionString);
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
-    }
     public ArrayList<Users> getUsersByID(String userInput) {
         ArrayList<Users> userFound = new ArrayList<>();
         String IDQuery = "select * from users where id = '" + userInput + "'";
+
+        connection = Database.getConnection();
         try (Statement stmt = connection.createStatement()) {
             ResultSet rs = stmt.executeQuery(IDQuery);
             while (rs.next()) {
@@ -46,6 +35,8 @@ public class Customers {
     public ArrayList<Users> getUsersByFName(String userInput) {
         ArrayList<Users> userFound = new ArrayList<>();
         String fNameQuery = "select * from users where fname = '" + userInput + "'";
+
+        connection = Database.getConnection();
         try (Statement stmt = connection.createStatement()) {
             ResultSet rs = stmt.executeQuery(fNameQuery);
             while (rs.next()) {
@@ -62,9 +53,12 @@ public class Customers {
         }
         return userFound;
     }
+
     public ArrayList<Users> getUsersByLName(String userInput) {
         ArrayList<Users> userFound = new ArrayList<>();
         String lNameQuery = "select * from users where fname = '" + userInput + "'";
+
+        connection = Database.getConnection();
         try (Statement stmt = connection.createStatement()) {
             ResultSet rs = stmt.executeQuery(lNameQuery);
             while (rs.next()) {
@@ -85,6 +79,8 @@ public class Customers {
     public ArrayList<Users> getAllUsers() {
         ArrayList<Users> userFound = new ArrayList<>();
         String allQuery = "select * from users";
+
+        connection = Database.getConnection();
         try (Statement stmt = connection.createStatement()) {
             ResultSet rs = stmt.executeQuery(allQuery);
             while (rs.next()) {
@@ -107,26 +103,26 @@ public class Customers {
         Users user = null;
 
         Scanner parameterSearch = new Scanner(System.in);
-        System.out.println("Parameters to search by: (First Name/Last Name/ID)");
+        System.out.println("Parameters to search by: (First Name/Last Name/ID/All)");
         String userParameter = parameterSearch.nextLine();
 
         if (userParameter.equalsIgnoreCase("First Name")) {
             Scanner fNameSearch = new Scanner(System.in);
-            System.out.println("First Name");
+            System.out.println("Enter first name: ");
             String userFName = fNameSearch.nextLine();
             result = getUsersByFName(userFName);
             user = result.get(0);
         }
         if (userParameter.equalsIgnoreCase("Last Name")) {
             Scanner lNameSearch = new Scanner(System.in);
-            System.out.println("Last Name: ");
+            System.out.println("Enter last name: ");
             String userLName = lNameSearch.nextLine();
             result = getUsersByLName(userLName);
             user = result.get(0);
         }
         if (userParameter.equalsIgnoreCase("ID")) {
             Scanner IDSearch = new Scanner(System.in);
-            System.out.println("ID: ");
+            System.out.println("Enter ID: ");
             String userID = IDSearch.nextLine();
             result = getUsersByID(userID);
             user = result.get(0);
@@ -138,17 +134,12 @@ public class Customers {
         return user;
     }
 
-    public void addStockToUser (Users user) {
-        String allQuery = "update users set no_of_books=no_of_books-1 where id='" + user.getId() + "'";
+    public void addStockToUser(Users user) {
+        int userID = user.getId();
         try (Statement stmt = connection.createStatement()) {
-            ResultSet rs = stmt.executeQuery(allQuery);
+            stmt.execute("update users set no_of_books=no_of_books+1 where id='" + userID + "'");
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
-        //sql command to update table
-    }
-
-    public void cleanUp() {
-        // enter code here to terminate connection with the database
     }
 }
