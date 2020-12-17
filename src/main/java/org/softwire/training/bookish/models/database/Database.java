@@ -12,10 +12,10 @@ public class Database {
     }
 
     public static void initialise() {
-        String hostname = "localhost";
+        String hostname = getEnvOrDefault("DB_HOSTNAME", "localhost");
         String database = "bookish_schema";
         String user = "root";
-        String password = SecureInformation.PASSWORD;
+        String password = getEnvOrDefault("DB_PASSWORD", SecureInformation.PASSWORD);
         String connectionString = "jdbc:mysql://" + hostname + "/" + database + "?user=" + user + "&password=" + password + "&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT&useSSL=false";
 
         try {
@@ -31,5 +31,10 @@ public class Database {
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
+    }
+
+    private static String getEnvOrDefault(String env, String defaultValue) {
+        String value = System.getenv(env);
+        return (value != null) ? value : defaultValue;
     }
 }
